@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Attitude Indicator</string>
+    <string name="transverse_inclination">transverse inclination:</string>
+    <string name="angular_value">Angle</string>
+    <string name="longitudinal_slope">Longitudinal slope:</string>
+    <string name="zero">Zero</string>
+    <string name="set">Set</string>
+    <string name="angular_y_value">angular Y value</string>
+    <string name="angular_x_value">angular X value</string>
+    <string name="allow_funcionating">Allow funcionating</string>
+</resources>
