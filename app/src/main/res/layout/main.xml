@@ -122,7 +122,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:weightSum="2"
+                android:weightSum="3"
                 android:layout_weight="3"
                 android:orientation="vertical">
 
@@ -150,6 +150,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp">
@@ -160,6 +161,25 @@
                         android:text="@string/angular_x_value"/>
                     <EditText
                         android:id="@+id/editText2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="numberDecimal" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="treshold"/>
+                    <EditText
+                        android:id="@+id/editText3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"

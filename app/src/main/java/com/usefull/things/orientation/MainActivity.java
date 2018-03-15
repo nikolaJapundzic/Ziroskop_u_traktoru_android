@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
   private Button button1;
   private Button button2;
   private CheckBox checkBox;
+  private EditText editText3;
 
   private static float xAngleNewSTATIC;
   private static float yAngleNewSTATIC;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     textView4 = (TextView) findViewById(R.id.textView4);
     editText1 = (EditText) findViewById(R.id.editText1);
     editText2 = (EditText) findViewById(R.id.editText2);
+    editText3 = (EditText) findViewById(R.id.editText3);
     button1 = (Button) findViewById(R.id.button1);
     button2 = (Button) findViewById(R.id.button2);
     checkBox = (CheckBox) findViewById(R.id.checkBox);
