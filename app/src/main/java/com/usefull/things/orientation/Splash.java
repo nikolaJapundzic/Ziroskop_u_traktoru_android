@@ -1,5 +1,6 @@
 package com.usefull.things.orientation;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -14,8 +15,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CALL_PHONE;
@@ -24,12 +27,14 @@ public class Splash extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     private View view;
+    private String tag = "TagBRE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        requestPermission();
+        Log.d(tag, "In the onCreate) event");
+
 
     }
     private boolean checkPermission() {
@@ -55,14 +60,14 @@ public class Splash extends AppCompatActivity {
                     boolean callAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
 
                     if (locationAccepted && callAccepted)
-                        Snackbar.make(view, "Permission Granted, Now you can access location data and camera and call.", Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(this,"Permission Granted, Now you can access location data and call.", Toast.LENGTH_LONG).show();
                     else {
 
-                        Snackbar.make(view, "Permission Denied, You cannot access location data and camera and call.", Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(this,"Permission Denied, You cannot access location data and call.", Toast.LENGTH_LONG).show();
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION)) {
-                                showMessageOKCancel("You need to allow access to three permissions",
+                                /*showMessageOKCancel("You need to allow access to two permissions",
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
@@ -72,7 +77,7 @@ public class Splash extends AppCompatActivity {
                                                 }
                                             }
                                         });
-                                return;
+                                return;*/
                             }
                         }
 
@@ -93,5 +98,22 @@ public class Splash extends AppCompatActivity {
                 .create()
                 .show();
     }
+    public void onResume()
+    {
+        super.onResume();
+        Log.d(tag, "In the onResume() event");
+        if (checkPermission()) {
+            Toast.makeText(this,"Permission granted.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+
+        } else {
+
+            Toast.makeText(this,"Please request permission.", Toast.LENGTH_LONG).show();
+            requestPermission();
+
+        }
+    }
+
 
 }

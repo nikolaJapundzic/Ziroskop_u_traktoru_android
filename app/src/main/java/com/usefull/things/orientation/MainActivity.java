@@ -91,32 +91,32 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     checkBox = (CheckBox) findViewById(R.id.checkBox);
     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     SharedPreferences.Editor editor = pref.edit();
-    editText1.setText(pref.getString("kljuc1","50"));
-    editText2.setText(pref.getString("kljuc2","50"));
-    setBok = Float.parseFloat(pref.getString("kljuc1","50"));
-    setUzduz = Float.parseFloat(pref.getString("kljuc2","50"));
+    editText1.setText(pref.getString("kljuc1", "50"));
+    editText2.setText(pref.getString("kljuc2", "50"));
+    setBok = Float.parseFloat(pref.getString("kljuc1", "50"));
+    setUzduz = Float.parseFloat(pref.getString("kljuc2", "50"));
     editor.commit();
 
     button1.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        if(flagKalib){
-          if(xAngleNewSTATIC > 0){
+        if (flagKalib) {
+          if (xAngleNewSTATIC > 0) {
             xAngleKALIBRACIONI = xAngleNewSTATIC;
           }
-          if(yAngleNewSTATIC > 0){
+          if (yAngleNewSTATIC > 0) {
             yAngleKALIBRACIONI = yAngleNewSTATIC;
           }
-          if(xAngleNewSTATIC < 0){
+          if (xAngleNewSTATIC < 0) {
             xAngleKALIBRACIONI = xAngleNewSTATIC;
           }
-          if(yAngleNewSTATIC < 0){
+          if (yAngleNewSTATIC < 0) {
             yAngleKALIBRACIONI = yAngleNewSTATIC;
           }
           flagKalib = false;
           button1.setTextSize(11);
           button1.setText("Restore");
-        }else{
+        } else {
           xAngleKALIBRACIONI = 0;
           yAngleKALIBRACIONI = 0;
           flagKalib = true;
@@ -131,13 +131,13 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     button2.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        try{
-          if(Float.parseFloat(String.valueOf(editText1.getText())) < 179.99){
-            if(Float.parseFloat(String.valueOf(editText2.getText())) < 179.99){
+        try {
+          if (Float.parseFloat(String.valueOf(editText1.getText())) < 179.99) {
+            if (Float.parseFloat(String.valueOf(editText2.getText())) < 179.99) {
               AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
               dialog.setCancelable(false);
               dialog.setTitle("Save");
-              dialog.setMessage("Are you sure you want to save and set?" );
+              dialog.setMessage("Are you sure you want to save and set?");
               dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
@@ -160,13 +160,13 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
 
               final AlertDialog alert = dialog.create();
               alert.show();
-            }else{
+            } else {
               errorDialog();
             }
-          }else{
+          } else {
             errorDialog();
           }
-        }catch (Exception e){
+        } catch (Exception e) {
           errorDialog();
         }
       }
@@ -198,39 +198,39 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     textView4.setText(String.format("%.2f", yAngleNewSTATIC));
 
 
-    if(checkBox.isChecked()){
-      if(xAngleNewSTATIC > setBok || xAngleNewSTATIC < (0-setBok) || yAngleNewSTATIC > setUzduz || yAngleNewSTATIC < (0-setUzduz)){
+    if (checkBox.isChecked()) {
+      if (xAngleNewSTATIC > setBok || xAngleNewSTATIC < (0 - setBok) || yAngleNewSTATIC > setUzduz || yAngleNewSTATIC < (0 - setUzduz)) {
         getWindow().getDecorView().setBackgroundColor(Color.RED);
-        if(flagROT){
-          //uradi
-          //errorDialog();
+        if (flagROT) {
+          dialContactPhone("381641031196");
 
         }
-        flagROT  = false;
+        flagROT = false;
 
-      }else{
+      } else {
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
         flagROT = true;
       }
-    }else{
+    } else {
       getWindow().getDecorView().setBackgroundColor(Color.WHITE);
     }
 
 
   }
-  protected void errorDialog(){
+
+  protected void errorDialog() {
     AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
     dialog.setCancelable(false);
     dialog.setTitle("Error");
-    dialog.setMessage("Only value from 0 to -179.99!" );
+    dialog.setMessage("Only value from 0 to -179.99!");
     dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int id) {
         //Action for "Ok".
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = pref.edit();
-        editText1.setText(pref.getString("kljuc1",""));
-        editText2.setText(pref.getString("kljuc2",""));
+        editText1.setText(pref.getString("kljuc1", ""));
+        editText2.setText(pref.getString("kljuc2", ""));
         editor.commit();
 
       }
@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     final AlertDialog alert = dialog.create();
     alert.show();
   }
+
   @Override
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
     switch (requestCode) {
@@ -288,18 +289,12 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
             .create()
             .show();
   }
-  private boolean checkPermission() {
-    int result = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
-    int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA);
-    int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE);
 
-    return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
-  }
-
-  private void requestPermission() {
-
-    ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION, CAMERA, CALL_PHONE}, PERMISSION_REQUEST_CODE);
-
+  private void dialContactPhone(final String phoneNumber) {
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+      startActivity(new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null)));
+      return;
+    }
   }
 
 }
