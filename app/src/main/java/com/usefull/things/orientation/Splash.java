@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -22,6 +20,7 @@ import android.widget.Toast;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CALL_PHONE;
+import static android.Manifest.permission.SEND_SMS;
 
 public class Splash extends AppCompatActivity {
 
@@ -40,13 +39,14 @@ public class Splash extends AppCompatActivity {
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
         int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE);
+        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), SEND_SMS);
 
-        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermission() {
 
-        ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION, CALL_PHONE}, PERMISSION_REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION, CALL_PHONE, SEND_SMS}, PERMISSION_REQUEST_CODE);
 
     }
 
@@ -58,12 +58,13 @@ public class Splash extends AppCompatActivity {
 
                     boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     boolean callAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    boolean smsAccepted = grantResults[2] == PackageManager.PERMISSION_GRANTED;
 
-                    if (locationAccepted && callAccepted)
-                        Toast.makeText(this,"Permission Granted, Now you can access location data and call.", Toast.LENGTH_LONG).show();
+                    if (locationAccepted && callAccepted && smsAccepted)
+                        Toast.makeText(this,"Permission Granted, Now you can access location data, SMS and call.", Toast.LENGTH_LONG).show();
                     else {
 
-                        Toast.makeText(this,"Permission Denied, You cannot access location data and call.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this,"Permission Denied, You cannot access location data, SMS and call.", Toast.LENGTH_LONG).show();
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION)) {

@@ -6,15 +6,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,15 +27,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.usefull.things.orientation.AttitudeIndicator;
-import com.usefull.things.orientation.Orientation;
-import com.usefull.things.orientation.R;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.CALL_PHONE;
 
 public class MainActivity extends AppCompatActivity implements Orientation.Listener {
 
@@ -45,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
   private Button button2;
   private CheckBox checkBox;
   private EditText editText3;
+  private EditText editText4;
 
   private static float xAngleNewSTATIC;
   private static float yAngleNewSTATIC;
@@ -60,8 +57,13 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
 
   private float setBok;
   private float setUzduz;
+  private float setTres;
+  private String lokacija = ":D";
 
   private SharedPreferences prefs;
+
+  private LocationManager locationManager;
+  private LocationListener listener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     editText1 = (EditText) findViewById(R.id.editText1);
     editText2 = (EditText) findViewById(R.id.editText2);
     editText3 = (EditText) findViewById(R.id.editText3);
+    editText4 = (EditText) findViewById(R.id.editText4);
     button1 = (Button) findViewById(R.id.button1);
     button2 = (Button) findViewById(R.id.button2);
     checkBox = (CheckBox) findViewById(R.id.checkBox);
@@ -95,8 +98,11 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     SharedPreferences.Editor editor = pref.edit();
     editText1.setText(pref.getString("kljuc1", "50"));
     editText2.setText(pref.getString("kljuc2", "50"));
+    editText3.setText(pref.getString("kljuc3", "5"));
+    editText4.setText(pref.getString("kljuc4", "+3810123456789"));
     setBok = Float.parseFloat(pref.getString("kljuc1", "50"));
     setUzduz = Float.parseFloat(pref.getString("kljuc2", "50"));
+    setTres = Float.parseFloat(pref.getString("kljuc3", "5"));
     editor.commit();
 
     button1.setOnClickListener(new View.OnClickListener() {
@@ -134,34 +140,42 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
       @Override
       public void onClick(View view) {
         try {
-          if (Float.parseFloat(String.valueOf(editText1.getText())) < 179.99) {
-            if (Float.parseFloat(String.valueOf(editText2.getText())) < 179.99) {
-              AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-              dialog.setCancelable(false);
-              dialog.setTitle("Save");
-              dialog.setMessage("Are you sure you want to save and set?");
-              dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                  //Action for "Ok".
-                  SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                  SharedPreferences.Editor editor = pref.edit();
-                  editor.putString("kljuc1", String.valueOf(editText1.getText()));
-                  editor.putString("kljuc2", String.valueOf(editText2.getText()));
-                  setBok = Float.parseFloat(String.valueOf(editText1.getText()));
-                  setUzduz = Float.parseFloat(String.valueOf(editText2.getText()));
-                  editor.commit();
-                }
-              })
-                      .setNegativeButton("Cancel ", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                          //Action for "Cancel".
-                        }
-                      });
+          if (Float.parseFloat(String.valueOf(editText1.getText())) < 180) {
+            if (Float.parseFloat(String.valueOf(editText2.getText())) < 180) {
+              if (Float.parseFloat(String.valueOf(editText3.getText())) < 10) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setCancelable(false);
+                dialog.setTitle("Save");
+                dialog.setMessage("Are you sure you want to save and set?");
+                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int id) {
+                    //Action for "Ok".
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("kljuc1", String.valueOf(editText1.getText()));
+                    editor.putString("kljuc2", String.valueOf(editText2.getText()));
+                    editor.putString("kljuc3", String.valueOf(editText3.getText()));
+                    editor.putString("kljuc4", String.valueOf(editText4.getText()));
+                    setBok = Float.parseFloat(String.valueOf(editText1.getText()));
+                    setUzduz = Float.parseFloat(String.valueOf(editText2.getText()));
+                    setTres = Float.parseFloat(String.valueOf(editText3.getText()));
+                    editor.commit();
+                  }
+                })
+                        .setNegativeButton("Cancel ", new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                            //Action for "Cancel".
+                          }
+                        });
 
-              final AlertDialog alert = dialog.create();
-              alert.show();
+                final AlertDialog alert = dialog.create();
+                alert.show();
+              } else {
+                errorDialog();
+              }
+
             } else {
               errorDialog();
             }
@@ -173,6 +187,41 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
         }
       }
     });
+    locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
+    listener = new LocationListener() {
+      @Override
+      public void onLocationChanged(Location location) {
+        lokacija = String.valueOf(location.getLatitude()); // + " " + location.getLatitude()
+        lokacija += " ";
+        lokacija += String.valueOf(location.getLongitude());
+
+      }
+
+      @Override
+      public void onStatusChanged(String s, int i, Bundle bundle) {
+
+      }
+
+      @Override
+      public void onProviderEnabled(String s) {
+
+      }
+
+      @Override
+      public void onProviderDisabled(String s) {
+
+        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(i);
+      }
+    };
+    // first check for permissions
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+      // TODO: Consider calling
+      return;
+    }
+    locationManager.requestLocationUpdates("gps", 5000, 0, listener);
 
 
   }
@@ -201,18 +250,27 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
 
 
     if (checkBox.isChecked()) {
-      if (xAngleNewSTATIC > setBok || xAngleNewSTATIC < (0 - setBok) || yAngleNewSTATIC > setUzduz || yAngleNewSTATIC < (0 - setUzduz)) {
-        getWindow().getDecorView().setBackgroundColor(Color.RED);
-        if (flagROT) {
-          dialContactPhone("381641031196");
 
+      if (xAngleNewSTATIC > (setBok-setTres) || xAngleNewSTATIC < (0 - (setBok-setTres)) || yAngleNewSTATIC > (setUzduz-setTres) || yAngleNewSTATIC < (0 - (setUzduz-setTres))){
+        getWindow().getDecorView().setBackgroundColor(Color.YELLOW);
+
+        if (xAngleNewSTATIC > setBok || xAngleNewSTATIC < (0 - setBok) || yAngleNewSTATIC > setUzduz || yAngleNewSTATIC < (0 - setUzduz)) {
+          getWindow().getDecorView().setBackgroundColor(Color.RED);
+          if (flagROT) {
+            sendSMS(String.valueOf(editText4.getText()), "I flip over, please help! My coordinate are:" + lokacija);
+            dialContactPhone(String.valueOf(editText4.getText()));
+          }
+          flagROT = false;
+
+        } else {
+          //getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+          flagROT = true;
         }
-        flagROT = false;
-
-      } else {
+      }else{
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-        flagROT = true;
       }
+
+
     } else {
       getWindow().getDecorView().setBackgroundColor(Color.WHITE);
     }
@@ -224,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
     dialog.setCancelable(false);
     dialog.setTitle("Error");
-    dialog.setMessage("Only value from 0 to -179.99!");
+    dialog.setMessage("Only value from 0 to 179.99 for angle, and 0 to 9.99 for threshold");
     dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int id) {
@@ -233,6 +291,8 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
         SharedPreferences.Editor editor = pref.edit();
         editText1.setText(pref.getString("kljuc1", ""));
         editText2.setText(pref.getString("kljuc2", ""));
+        editText3.setText(pref.getString("kljuc3", ""));
+        editText4.setText(pref.getString("kljuc4", ""));
         editor.commit();
 
       }
@@ -242,45 +302,6 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
     alert.show();
   }
 
-  @Override
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    switch (requestCode) {
-      case PERMISSION_REQUEST_CODE:
-        if (grantResults.length > 0) {
-
-          boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-          boolean cameraAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-          boolean callAccepted = grantResults[2] == PackageManager.PERMISSION_GRANTED;
-
-          if (locationAccepted && cameraAccepted && callAccepted)
-            Snackbar.make(view, "Permission Granted, Now you can access location data and camera and call.", Snackbar.LENGTH_LONG).show();
-          else {
-
-            Snackbar.make(view, "Permission Denied, You cannot access location data and camera and call.", Snackbar.LENGTH_LONG).show();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-              if (shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION)) {
-                showMessageOKCancel("You need to allow access to three permissions",
-                        new DialogInterface.OnClickListener() {
-                          @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                              requestPermissions(new String[]{ACCESS_FINE_LOCATION, CAMERA, CALL_PHONE},
-                                      PERMISSION_REQUEST_CODE);
-                            }
-                          }
-                        });
-                return;
-              }
-            }
-
-          }
-        }
-
-
-        break;
-    }
-  }
 
 
   private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
@@ -294,9 +315,14 @@ public class MainActivity extends AppCompatActivity implements Orientation.Liste
 
   private void dialContactPhone(final String phoneNumber) {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-      startActivity(new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null)));
       return;
     }
+    startActivity(new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null)));
+  }
+
+  private void sendSMS(String phoneNumber, String message) {
+    SmsManager sms = SmsManager.getDefault();
+    sms.sendTextMessage(phoneNumber, null, message, null, null);
   }
 
 }
